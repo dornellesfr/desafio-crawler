@@ -24,15 +24,13 @@ keys_data = [
 ]
 
 
-def get_title(soup: BeautifulSoup) -> str:
-    title = soup.find(
-        "span",
-        {"class": "sc-afe43def-1 fDTGTb"})
-    if title:
-        return title.text
+def get_tag_data(soup: BeautifulSoup, tag: str, attr: str, value: str):
+    item = soup.find(
+        tag,
+        {attr: value})
+    if item:
+        return item.text
     return "Unknow"
-
-def get_original_title()
 
 
 def scraping_movie(link: str):
@@ -41,7 +39,13 @@ def scraping_movie(link: str):
     html_content = get_website(link)
     soup = BeautifulSoup(html_content, "html.parser")
 
-    print(get_title(soup))
+    title = get_tag_data(soup, "span", "class", "sc-afe43def-1 fDTGTb")
+    original_title = get_tag_data(soup, "div", "class", "sc-afe43def-3 EpHJp")[16:]
+    release_year = get_tag_data(soup, "a", "href", "/title/tt0068646/releaseinfo?ref_=tt_ov_rdat")
+
+    print(title)
+    print(original_title)
+    print(release_year)
 
 
 if __name__ == "__main__":
