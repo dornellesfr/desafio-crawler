@@ -1,16 +1,17 @@
 from request import get_website
 from bs4 import BeautifulSoup
 
-url = 'https://www.imdb.com/chart/top/?ref_=nv_mv_250'
-
+url_domain = "https://www.imdb.com"
+url = "https://www.imdb.com/chart/top/?ref_=nv_mv_250"
 html_content = get_website(url)
 
-if html_content:
-    soup = BeautifulSoup(html_content, "html.parser")
-    links = soup.find_all("li")
 
-    for link in links[36:286]:
-        print(link.h3)
+soup = BeautifulSoup(html_content, "html.parser")
+movies_container = soup.find_all("li")
+top_250_movies_links = []
 
-else:
-    print("Fail to get content page.")
+for movie in movies_container[36:286]:
+    link_movie = movie.a["href"]
+    top_250_movies_links.append(url_domain + link_movie)
+
+print(top_250_movies_links)
