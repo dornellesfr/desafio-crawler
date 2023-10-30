@@ -18,9 +18,9 @@ keys_data = [
     "stars",
     "ranking_position",
     "metascore",
-    "country_of_origin",
     "budget",
     "gross_worldwide",
+    "original_country",
 ]
 
 
@@ -97,19 +97,25 @@ def get_metascore(soup: BeautifulSoup) -> int:
     return int(metascore)
 
 
-def get_country_of_origin(soup: BeautifulSoup) -> str:
-    ...
-
-
 def get_budget(soup: BeautifulSoup) -> int:
-    ...
+    budget = soup.select("span.ipc-metadata-list-item__list-content-item")[2].text
+    budget = int(budget[1:-12].replace(',', ''))
+    return budget
+
+
+def get_original_country(soup: BeautifulSoup) -> str:
+    country = soup.select("div.sc-f65f65be-0.fVkLRr > ul.ipc-metadata-list.ipc-metadata-list--dividers-all.ipc-metadata-list--base > li.ipc-metadata-list__item > div.ipc-metadata-list-item__content-container > ul.ipc-inline-list.ipc-inline-list--show-dividers.ipc-inline-list--inline.ipc-metadata-list-item__list-content.base > li.ipc-inline-list__item > a.ipc-metadata-list-item__list-content-item.ipc-metadata-list-item__list-content-item--link")[1].text
+    return country
 
 
 def get_gross_worldwide(soup: BeautifulSoup) -> int:
-    ...
+    gross = soup.select("li.ipc-metadata-list__item sc-6d4f3f8c-2 byhjlB > div.ipc-metadata-list-item__content-container > ul.ipc-inline-list.ipc-inline-list--show-dividers.ipc-inline-list--inline.ipc-metadata-list-item__list-content.base")
+    # gross = int(gross[1:-12].replace(',', ''))
+    return gross
 
 
 def scraping_movie(link: str):
+    sleep(4)
     # movie_data = {}
 
     html_content = get_website(link)
@@ -129,10 +135,9 @@ def scraping_movie(link: str):
     stars = get_stars(soup)
     rate_movie = get_ranking(soup)
     metascore = get_metascore(soup)
-    storyline = get_storyline(soup)
-    # country_of_origin = get_country_of_origin(soup)
     # budget = get_budget(soup)
-    # gross_worldwide = get_gross_worldwide(soup)
+    gross_worldwide = get_gross_worldwide(soup)
+    original_country = get_original_country(soup)
 
     print(title)
     print(original)
@@ -148,11 +153,10 @@ def scraping_movie(link: str):
     print(stars)
     print(rate_movie)
     print(metascore)
-    print(storyline)
-    # print(country_of_origin)
     # print(budget)
-    # print(gross_worldwide)
+    print(gross_worldwide)
+    print(original_country)
 
 
 if __name__ == "__main__":
-    scraping_movie('https://www.imdb.com/title/tt9362722/?ref_=chttp_t_24')
+    scraping_movie('https://www.imdb.com/title/tt0056172/?ref_=chttp_t_98')
