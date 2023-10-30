@@ -1,27 +1,5 @@
 from bs4 import BeautifulSoup
 from request import get_website
-from time import sleep
-
-
-keys_data = [
-    "title",
-    "original_title",
-    "release_year",
-    "parents_guide",
-    "duration",
-    "imdb_rating",
-    "popularity",
-    "genre",
-    "synopsis",
-    "director",
-    "writers",
-    "stars",
-    "ranking_position",
-    "metascore",
-    "budget",
-    "gross_worldwide",
-    "original_country",
-]
 
 
 def clean_list_tags(tags) -> list[str]:
@@ -31,6 +9,18 @@ def clean_list_tags(tags) -> list[str]:
     return data
 
 
+def get_release_year(soup: BeautifulSoup) -> int:
+    class_ = "ul > li > a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color"
+    release = int(soup.select(class_)[4].text)
+    return release
+
+
+def get_parents_guide(soup: BeautifulSoup) -> int:
+    class_ = "ul > li > a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color"
+    parents_guide = int(soup.select(class_)[5].text)
+    return parents_guide
+
+
 def get_duration(soup: BeautifulSoup) -> str:
     duration = soup.select("ul > li.ipc-inline-list__item")[6].text
     duration_str = duration.split(' ')
@@ -38,14 +28,18 @@ def get_duration(soup: BeautifulSoup) -> str:
 
 
 def get_genre(soup: BeautifulSoup) -> list[str]:
-    genres = soup.select("div.ipc-chip-list__scroller > a > span.ipc-chip__text")
+    class_ = "div.ipc-chip-list__scroller > a > span.ipc-chip__text"
+    genres = soup.select(class_)
     genres = clean_list_tags(genres)
     return genres
 
 
 def get_director(soup: BeautifulSoup) -> list[str]:
+    class_ = "a.ipc-metadata-list-item__label, " \
+             "span.ipc-metadata-list-item__label, " \
+             "a.ipc-metadata-list-item__list-content-item"
     end = 0
-    tags = soup.select("a.ipc-metadata-list-item__label.ipc-metadata-list-item__label--link, span.ipc-metadata-list-item__label.ipc-metadata-list-item__label--btn, a.ipc-metadata-list-item__list-content-item.ipc-metadata-list-item__list-content-item--link")
+    tags = soup.select(class_)
     tags = clean_list_tags(tags)
 
     try:
@@ -57,8 +51,11 @@ def get_director(soup: BeautifulSoup) -> list[str]:
 
 
 def get_writers(soup: BeautifulSoup) -> list[str]:
+    class_ = "a.ipc-metadata-list-item__label, " \
+            "span.ipc-metadata-list-item__label, " \
+            "a.ipc-metadata-list-item__list-content-item"
     initial = 0
-    tags = soup.select("a.ipc-metadata-list-item__label.ipc-metadata-list-item__label--link, span.ipc-metadata-list-item__label.ipc-metadata-list-item__label--btn, a.ipc-metadata-list-item__list-content-item.ipc-metadata-list-item__list-content-item--link")
+    tags = soup.select(class_)
 
     tags = clean_list_tags(tags)
 
@@ -72,8 +69,11 @@ def get_writers(soup: BeautifulSoup) -> list[str]:
 
 
 def get_stars(soup: BeautifulSoup) -> list[str]:
+    class_ = "a.ipc-metadata-list-item__label, " \
+        "span.ipc-metadata-list-item__label, " \
+        "a.ipc-metadata-list-item__list-content-item"
     end = 0
-    tags = soup.select("a.ipc-metadata-list-item__label.ipc-metadata-list-item__label--link, span.ipc-metadata-list-item__label.ipc-metadata-list-item__label--btn, a.ipc-metadata-list-item__list-content-item.ipc-metadata-list-item__list-content-item--link")
+    tags = soup.select(class_)
 
     tags = clean_list_tags(tags)
 
@@ -92,71 +92,64 @@ def get_ranking(soup: BeautifulSoup) -> int:
     return int(rate[17:])
 
 
+def get_popularity(soup: BeautifulSoup) -> int:
+    popularity = soup.select("div > div.sc-5f7fb5b4-1.bhuIgW")[0].text
+    popularity = popularity.replace(',', '')
+    return int(popularity)
+
+
 def get_metascore(soup: BeautifulSoup) -> int:
-    metascore = soup.select('span.sc-b0901df4-0.gzyNKq.metacritic-score-box')[0].text
+    metascore = soup.select('span.metacritic-score-box')[0].text
     return int(metascore)
 
 
-def get_budget(soup: BeautifulSoup) -> int:
-    budget = soup.select("span.ipc-metadata-list-item__list-content-item")[2].text
-    budget = int(budget[1:-12].replace(',', ''))
-    return budget
-
-
 def get_original_country(soup: BeautifulSoup) -> str:
-    country = soup.select("div.sc-f65f65be-0.fVkLRr > ul.ipc-metadata-list.ipc-metadata-list--dividers-all.ipc-metadata-list--base > li.ipc-metadata-list__item > div.ipc-metadata-list-item__content-container > ul.ipc-inline-list.ipc-inline-list--show-dividers.ipc-inline-list--inline.ipc-metadata-list-item__list-content.base > li.ipc-inline-list__item > a.ipc-metadata-list-item__list-content-item.ipc-metadata-list-item__list-content-item--link")[1].text
+    class_ = "div.fVkLRr a.ipc-metadata-list-item__list-content-item"
+    country = soup.select(class_)[1].text
     return country
 
 
-def get_gross_worldwide(soup: BeautifulSoup) -> int:
-    gross = soup.select("li.ipc-metadata-list__item sc-6d4f3f8c-2 byhjlB > div.ipc-metadata-list-item__content-container > ul.ipc-inline-list.ipc-inline-list--show-dividers.ipc-inline-list--inline.ipc-metadata-list-item__list-content.base")
-    # gross = int(gross[1:-12].replace(',', ''))
-    return gross
-
-
 def scraping_movie(link: str):
-    sleep(4)
-    # movie_data = {}
-
     html_content = get_website(link)
     soup = BeautifulSoup(html_content, "html.parser")
 
     title = soup.select("div > h1 > span.sc-afe43def-1")[0].text
-    original = soup.select("div > div.sc-afe43def-3.EpHJp")[0].text[16:]
-    release_year = int(soup.select("ul > li > a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color")[4].text)
-    parents_guide = int(soup.select("ul > li > a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color")[5].text)
+    original_title = soup.select("div > div.sc-afe43def-3.EpHJp")[0].text[16:]
+    release_year = get_release_year(soup)
+    parents_guide = get_parents_guide(soup)
     duration = get_duration(soup)
     imdb_rating = float(soup.select('div > span.sc-bde20123-1.iZlgcd')[0].text)
-    # popularity = float(soup.select("div > div.sc-5f7fb5b4-1.bhuIgW")[0].text)
+    popularity = get_popularity(soup)
     genre = get_genre(soup)
     synopsis = soup.select("p > span.sc-466bb6c-1.dRrIo")[0].text
     director = get_director(soup)
     writers = get_writers(soup)
     stars = get_stars(soup)
-    rate_movie = get_ranking(soup)
+    ranking_position = get_ranking(soup)
     metascore = get_metascore(soup)
-    # budget = get_budget(soup)
-    gross_worldwide = get_gross_worldwide(soup)
     original_country = get_original_country(soup)
 
-    print(title)
-    print(original)
-    print(release_year)
-    print(parents_guide)
-    print(duration)
-    print(imdb_rating)
-    # print(popularity)
-    print(genre)
-    print(synopsis)
-    print(director)
-    print(writers)
-    print(stars)
-    print(rate_movie)
-    print(metascore)
-    # print(budget)
-    print(gross_worldwide)
-    print(original_country)
+    infos = {
+        "title": title,
+        "original_title": original_title,
+        "release_year": release_year,
+        "parents_guide": parents_guide,
+        "duration": duration,
+        "imdb_rating": imdb_rating,
+        "popularity": popularity,
+        "genre": genre,
+        "synopsis": synopsis,
+        "director": director,
+        "writers": writers,
+        "stars": stars,
+        "ranking_position": ranking_position,
+        "metascore": metascore,
+        "original_country": original_country,
+    }
+
+    return infos
 
 
 if __name__ == "__main__":
-    scraping_movie('https://www.imdb.com/title/tt0056172/?ref_=chttp_t_98')
+    r = scraping_movie('https://www.imdb.com/title/tt9362722/?ref_=chttp_t_24')
+    print(r)
