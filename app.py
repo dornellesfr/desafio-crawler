@@ -1,5 +1,3 @@
-# Good Luck!!
-
 def main():
     print("Hello world!")
 
