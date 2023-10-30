@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from request import get_website
+from time import sleep
 
 
 keys_data = [
@@ -15,8 +16,8 @@ keys_data = [
     "director",
     "writers",
     "stars",
-    "oscars_won",
-    "storyline",
+    "ranking_position",
+    "metascore",
     "country_of_origin",
     "budget",
     "gross_worldwide",
@@ -92,11 +93,8 @@ def get_ranking(soup: BeautifulSoup) -> int:
 
 
 def get_metascore(soup: BeautifulSoup) -> int:
-    ...
-
-
-def get_storyline(soup: BeautifulSoup) -> str:
-    ...
+    metascore = soup.select('span.sc-b0901df4-0.gzyNKq.metacritic-score-box')[0].text
+    return int(metascore)
 
 
 def get_country_of_origin(soup: BeautifulSoup) -> str:
@@ -130,8 +128,8 @@ def scraping_movie(link: str):
     writers = get_writers(soup)
     stars = get_stars(soup)
     rate_movie = get_ranking(soup)
-    # metascore = get_storyline (soup)
-    # storyline = get_storyline (soup)
+    metascore = get_metascore(soup)
+    storyline = get_storyline(soup)
     # country_of_origin = get_country_of_origin(soup)
     # budget = get_budget(soup)
     # gross_worldwide = get_gross_worldwide(soup)
@@ -150,11 +148,11 @@ def scraping_movie(link: str):
     print(stars)
     print(rate_movie)
     print(metascore)
-    # print(storyline)
+    print(storyline)
     # print(country_of_origin)
     # print(budget)
     # print(gross_worldwide)
 
 
 if __name__ == "__main__":
-    scraping_movie('https://www.imdb.com/title/tt0211915/?ref_=chttp_t_105')
+    scraping_movie('https://www.imdb.com/title/tt9362722/?ref_=chttp_t_24')
