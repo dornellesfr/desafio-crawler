@@ -1,5 +1,9 @@
 from bs4 import BeautifulSoup
-from request import get_website
+from .request import get_website
+import logging
+
+logging.basicConfig(filename='scraper.log', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 def clean_list_tags(tags) -> list[str]:
@@ -9,15 +13,26 @@ def clean_list_tags(tags) -> list[str]:
     return data
 
 
+def get_title(soup: BeautifulSoup) -> str:
+    return soup.select("div > h1 > span.sc-afe43def-1")[0].text
+
+
+def get_original_title(soup: BeautifulSoup) -> str:
+    try:
+        return soup.select("div > div.EpHJp")[0].text[16:]
+    except IndexError:
+        return get_title(soup)
+
+
 def get_release_year(soup: BeautifulSoup) -> int:
-    class_ = "ul > li > a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color"
-    release = int(soup.select(class_)[4].text)
+    class_ = "ul.sc-afe43def-4.kdXikI a.ipc-link.ipc-link--baseAlt"
+    release = int(soup.select(class_)[0].text)
     return release
 
 
-def get_parents_guide(soup: BeautifulSoup) -> int:
+def get_parents_guide(soup: BeautifulSoup) -> str:
     class_ = "ul > li > a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color"
-    parents_guide = int(soup.select(class_)[5].text)
+    parents_guide = soup.select(class_)[5].text
     return parents_guide
 
 
@@ -88,19 +103,28 @@ def get_stars(soup: BeautifulSoup) -> list[str]:
 
 
 def get_ranking(soup: BeautifulSoup) -> int:
-    rate = soup.select("div.sc-fcdc3619-1 > a.ipc-link")[0].text
-    return int(rate[17:])
+    try:
+        rate = soup.select("div.sc-fcdc3619-1 > a.ipc-link")[0].text
+        return int(rate[17:])
+    except IndexError:
+        return 250
 
 
-def get_popularity(soup: BeautifulSoup) -> int:
-    popularity = soup.select("div > div.sc-5f7fb5b4-1.bhuIgW")[0].text
-    popularity = popularity.replace(',', '')
-    return int(popularity)
+def get_popularity(soup: BeautifulSoup) -> int | bool:
+    try:
+        popularity = soup.select("div > div.sc-5f7fb5b4-1.bhuIgW")[0].text
+        popularity = popularity.replace(',', '')
+        return int(popularity)
+    except IndexError:
+        return False
 
 
-def get_metascore(soup: BeautifulSoup) -> int:
-    metascore = soup.select('span.metacritic-score-box')[0].text
-    return int(metascore)
+def get_metascore(soup: BeautifulSoup) -> int | bool:
+    try:
+        metascore = soup.select('span.metacritic-score-box')[0].text
+        return int(metascore)
+    except IndexError:
+        return False
 
 
 def get_original_country(soup: BeautifulSoup) -> str:
@@ -111,10 +135,16 @@ def get_original_country(soup: BeautifulSoup) -> str:
 
 def scraping_movie(link: str):
     html_content = get_website(link)
+    if html_content is None:
+        logger.critical('Timeout Error')
+        raise TimeoutError
+
+    logger.info(f'Scraping website: {link}')
+
     soup = BeautifulSoup(html_content, "html.parser")
 
-    title = soup.select("div > h1 > span.sc-afe43def-1")[0].text
-    original_title = soup.select("div > div.sc-afe43def-3.EpHJp")[0].text[16:]
+    title = get_title(soup)
+    original_title = get_original_title(soup)
     release_year = get_release_year(soup)
     parents_guide = get_parents_guide(soup)
     duration = get_duration(soup)
@@ -146,6 +176,9 @@ def scraping_movie(link: str):
         "metascore": metascore,
         "original_country": original_country,
     }
+
+    logger.info(f'{title} was succesfully caught')
+    logger.debug(infos)
 
     return infos
 
