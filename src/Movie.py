@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import logging
+import requests
 
 
 class Movie:
@@ -83,9 +84,7 @@ class Movie:
             "a.ipc-metadata-list-item__list-content-item"
         end = 0
         tags = self.soup.select(class_)
-
         tags = self.clean_list_tags(tags)
-
         initial = tags.index('Stars') + 1
 
         try:
@@ -130,25 +129,29 @@ class Movie:
         return data
 
     def result(self) -> object:
-        infos = {
-            "title": self.__get_title(),
-            "original_title": self.__get_original_title(),
-            "release_year": self.__get_release_year(),
-            "parents_guide": self.__get_parents_guide(),
-            "duration": self.__get_duration(),
-            "imdb_rating": self.__get_imdb_rating(),
-            "popularity": self.__get_popularity(),
-            "genre": self.__get_genre(),
-            "synopsis": self.__get_synopsis(),
-            "director": self.__get_director(),
-            "writers": self.__get_writers(),
-            "stars": self.__get_stars(),
-            "ranking_position": self.__get_ranking(),
-            "metascore": self.__get_metascore(),
-            "original_country": self.__get_original_country(),
-        }
+        try:
+            infos = {
+                "title": self.__get_title(),
+                "original_title": self.__get_original_title(),
+                "release_year": self.__get_release_year(),
+                "parents_guide": self.__get_parents_guide(),
+                "duration": self.__get_duration(),
+                "imdb_rating": self.__get_imdb_rating(),
+                "popularity": self.__get_popularity(),
+                "genre": self.__get_genre(),
+                "synopsis": self.__get_synopsis(),
+                "director": self.__get_director(),
+                "writers": self.__get_writers(),
+                "stars": self.__get_stars(),
+                "ranking_position": self.__get_ranking(),
+                "metascore": self.__get_metascore(),
+                "original_country": self.__get_original_country(),
+            }
 
-        self.logger.info(f'{infos["title"]} was succesfully caught')
-        self.logger.debug(infos)
+            self.logger.info(f'{infos["title"]} was succesfully caught')
+            self.logger.debug(infos)
 
-        return infos
+            return infos
+        except requests.HTTPError as e:
+            self.logger.error('An error was finded')
+            self.logger.error(e)
