@@ -1,3 +1,7 @@
+# files to not spoil
+scraper.log
+./output.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
