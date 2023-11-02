@@ -1,6 +1,7 @@
 # files to not spoil
 scraper.log
 output.json
+output.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
