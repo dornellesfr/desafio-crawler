@@ -15,17 +15,14 @@ if html_content is None:
     raise TimeoutError
 
 soup = BeautifulSoup(html_content, "html.parser")
-movies_container = soup.find_all("li")
+movies_container = soup.select("li.jemTre.cli-parent a.ipc-title-link-wrapper")
+
+for movie in movies_container:
+    link = movie['href']
+    movie_link = get_website(URL_DOMAIN + str(link))
+    soup_ = BeautifulSoup(movie_link, "html.parser")
+    movie_soup = Movie(soup_)
+    MOVIES.append(movie_soup.result())
 
 with open('./output.json', 'w') as file:
-    for movie in movies_container[36:286]:
-        link_movie: str = movie.a["href"]
-
-        soup_link = BeautifulSoup(get_website(URL_DOMAIN + link_movie),
-                                  "html.parser")
-
-        movie_soup = Movie(soup_link)
-
-        MOVIES.append(movie_soup.result)
-
     json.dump(MOVIES, file, indent=2)
