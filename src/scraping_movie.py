@@ -42,11 +42,19 @@ def get_duration(soup: BeautifulSoup) -> str:
     return ''.join(duration_str)
 
 
+def get_imdb_rating(soup: BeautifulSoup) -> float:
+    return float(soup.select('div > span.sc-bde20123-1.iZlgcd')[0].text)
+
+
 def get_genre(soup: BeautifulSoup) -> list[str]:
     class_ = "div.ipc-chip-list__scroller > a > span.ipc-chip__text"
     genres = soup.select(class_)
     genres = clean_list_tags(genres)
     return genres
+
+
+def get_synopsis(soup: BeautifulSoup) -> str:
+    return soup.select("p > span.sc-466bb6c-1.dRrIo")[0].text
 
 
 def get_director(soup: BeautifulSoup) -> list[str]:
@@ -143,41 +151,25 @@ def scraping_movie(link: str):
 
     soup = BeautifulSoup(html_content, "html.parser")
 
-    title = get_title(soup)
-    original_title = get_original_title(soup)
-    release_year = get_release_year(soup)
-    parents_guide = get_parents_guide(soup)
-    duration = get_duration(soup)
-    imdb_rating = float(soup.select('div > span.sc-bde20123-1.iZlgcd')[0].text)
-    popularity = get_popularity(soup)
-    genre = get_genre(soup)
-    synopsis = soup.select("p > span.sc-466bb6c-1.dRrIo")[0].text
-    director = get_director(soup)
-    writers = get_writers(soup)
-    stars = get_stars(soup)
-    ranking_position = get_ranking(soup)
-    metascore = get_metascore(soup)
-    original_country = get_original_country(soup)
-
     infos = {
-        "title": title,
-        "original_title": original_title,
-        "release_year": release_year,
-        "parents_guide": parents_guide,
-        "duration": duration,
-        "imdb_rating": imdb_rating,
-        "popularity": popularity,
-        "genre": genre,
-        "synopsis": synopsis,
-        "director": director,
-        "writers": writers,
-        "stars": stars,
-        "ranking_position": ranking_position,
-        "metascore": metascore,
-        "original_country": original_country,
+        "title": get_title(soup),
+        "original_title": get_original_title(soup),
+        "release_year": get_release_year(soup),
+        "parents_guide": get_parents_guide(soup),
+        "duration": get_duration(soup),
+        "imdb_rating": get_imdb_rating(soup),
+        "popularity": get_popularity(soup),
+        "genre": get_genre(soup),
+        "synopsis": get_synopsis(soup),
+        "director": get_director(soup),
+        "writers": get_writers(soup),
+        "stars": get_stars(soup),
+        "ranking_position": get_ranking(soup),
+        "metascore": get_metascore(soup),
+        "original_country": get_original_country(soup),
     }
 
-    logger.info(f'{title} was succesfully caught')
+    logger.info(f'{infos["title"]} was succesfully caught')
     logger.debug(infos)
 
     return infos
