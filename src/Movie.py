@@ -40,7 +40,7 @@ class Movie:
     def __get_genre(self) -> list[str]:
         class_ = "div.ipc-chip-list__scroller > a > span.ipc-chip__text"
         genres = self.soup.select(class_)
-        genres = self.clean_list_tags(genres)
+        genres = self.__clean_list_tags(genres)
         return genres
 
     def __get_synopsis(self) -> str:
@@ -52,7 +52,7 @@ class Movie:
                 "a.ipc-metadata-list-item__list-content-item"
         end = 0
         tags = self.soup.select(class_)
-        tags = self.clean_list_tags(tags)
+        tags = self.__clean_list_tags(tags)
 
         try:
             end = tags.index('Writers')
@@ -68,7 +68,7 @@ class Movie:
         initial = 0
         tags = self.soup.select(class_)
 
-        tags = self.clean_list_tags(tags)
+        tags = self.__clean_list_tags(tags)
 
         try:
             initial = tags.index('Writers') + 1
@@ -84,7 +84,7 @@ class Movie:
             "a.ipc-metadata-list-item__list-content-item"
         end = 0
         tags = self.soup.select(class_)
-        tags = self.clean_list_tags(tags)
+        tags = self.__clean_list_tags(tags)
         initial = tags.index('Stars') + 1
 
         try:
@@ -96,7 +96,8 @@ class Movie:
 
     def __get_ranking(self) -> int:
         try:
-            rate = self.soup.select("div.sc-fcdc3619-1 > a.ipc-link")[0].text
+            class_ = 'div.sc-b45a339a-1.dBjmae a.top-rated-link'
+            rate = self.soup.select(class_)[0].text
             return int(rate[17:])
         except IndexError:
             return 250
@@ -122,7 +123,7 @@ class Movie:
         country = self.soup.select(class_)[1].text
         return country
 
-    def clean_list_tags(self, tags) -> list[str]:
+    def __clean_list_tags(self, tags) -> list[str]:
         data = []
         for tag in tags:
             data.append(tag.text)
@@ -149,6 +150,7 @@ class Movie:
             }
 
             self.logger.info(f'{infos["title"]} was succesfully caught')
+            self.logger.info(f'Position ranking: {infos["ranking_position"]}')
             self.logger.debug(infos)
 
             return infos
