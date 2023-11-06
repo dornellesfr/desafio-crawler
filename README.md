@@ -1,50 +1,82 @@
-# beeMôn:
+# Challenge Beemon Scraper
+ Website: [imdb](https://www.imdb.com/chart/top/?ref_=nv_mv_250) and his top 250 movies
 
-Na beeMôn criamos muitos sistemas de raspagem de dados e buscamos todos os dias inovação na analise dos dados. Este desafio esta aberto para todos que quiserem abrir um fork e submeter suas ideias de tecnologia.
+## Objetive
+This repository is a challenge Beemon
 
-## Desafio:
-Escolher uma dos sites abaixo para fazer o desafio
+## Libs:
+	- Beautifulsoup
+	- pytest
+	- pdfkit
+	- requests
 
-- [quotes.toscrape](https://quotes.toscrape.com/)
-- [imdb.com](https://www.imdb.com/chart/top/?ref_=nv_mv_250)
+## Necessarie libs:
+It is necessary be installed in your pc:
 
-### Minimo Entregável:
+	- docker;
+	- docker-compose
+## How to install this project and run
+Follows this steps to run the app
 
-- Buscar dados de forma automatizada(script de linha de comando ou interface clicavel)
-- Padronizar os retornos de forma estruturada (json/csv)
-- Sistema de logs de para acompanhamento da execução
-- Ter um prova da consulta (Screenshot)
+` git clone git@github.com:dornellesfr/desafio-crawler.git && cd desafio-crawler`
 
-### Pontos Extra para:
+`docker-compose up -d`
 
-- Armazenamento dos resultados em um banco relacional ou não relacional
-- fazer um dataframe que possibilite visualizar os resultados via pandas
-- Trazer resultados de forma dinamica sem fixar caminhos no `xpath`
-- Dockerizar a aplicação
-- Conseguir agendar uma execução para um dia e horario.
+Before the container is already up you should get into it
 
-### Libs sugeridas:
+``docker start -ai crawler_challenge``
 
- - Selenium 
- - Scrapy
- - Pandas
- - Requests
- - BeautifulSoup 
+You'll get into the container so run
+
+``python3 app.py``
+
+It will start to scraping the pages.
+
+You can fallow the execution at file scraper.log with logs showing what movie is scraping.
+Result going to output file named as output.json and a screenshot gonna show as screenshot.pdf
+
+## To run tests
+To run tests you just need run the command:
+ ``- python3 -m pytest``
+This command will test all unit tests of Movie Class# Challenge Beemon Scraper
+ Website: [imdb](https://www.imdb.com/chart/top/?ref_=nv_mv_250) and his top 250 movies
+
+## Objetive
+This repository is a challenge Beemon
+
+## Libs:
+	- Beautifulsoup
+	- pytest
+	- pdfkit
+	- requests
+
+## Necessarie libs:
+It is necessary be installed in your pc:
+
+	- docker;
+	- docker-compose
+## How to install this project and run
+Follows this steps to run the app
+
+` git clone git@github.com:dornellesfr/desafio-crawler.git && cd desafio-crawler`
 
 
-### O que iremos avaliar:
+`docker-compose up -d`
 
-- Conhecimento em HTML
-- Conhecimento em fluxo de request/response
-- Conhecimento em extração de dados
-- Conhecimento em base64
-- Boas práticas de programação
-- Utilização de bibliotecas de terceiros
-- Documentação
-- Criatividade
-- Cobertura de testes
-- Tempo de execução do código
-- Versionamento do código
+Before the container is already up you should get into it
 
+``docker start -ai crawler_challenge``
 
+You'll get into the container so run
 
+``python3 app.py``
+
+It will start to scraping the pages.
+
+You can fallow the execution at file scraper.log with logs showing what movie is scraping.
+Result going to output file named as output.json and a screenshot gonna show as screenshot.pdf
+
+## To run tests
+To run tests you just need run the command:
+ ``- python3 -m pytest``
+This command will test all unit tests of Movie Class
