@@ -40,6 +40,7 @@ class Movie:
     def get_genre(self) -> list[str]:
         class_ = "div.ipc-chip-list__scroller > a > span.ipc-chip__text"
         genres = self.soup.select(class_)
+        print(genres)
         genres = self.clean_list_tags(genres)
         return genres
 
@@ -102,26 +103,12 @@ class Movie:
         except IndexError:
             return 250
 
-    def get_popularity(self) -> int | bool:
-        try:
-            popularity = \
-              self.soup.select("div > div.sc-5f7fb5b4-1.bhuIgW")[0].text
-            popularity = popularity.replace(',', '')
-            return int(popularity)
-        except IndexError:
-            return False
-
     def get_metascore(self) -> int | bool:
         try:
             metascore = self.soup.select('span.metacritic-score-box')[0].text
             return int(metascore)
         except IndexError:
             return False
-
-    def get_original_country(self) -> str:
-        class_ = "div.fVkLRr a.ipc-metadata-list-item__list-content-item"
-        country = self.soup.select(class_)[1].text
-        return country
 
     def clean_list_tags(self, tags) -> list[str]:
         data = []
@@ -138,7 +125,6 @@ class Movie:
                 "parents_guide": self.get_parents_guide(),
                 "duration": self.get_duration(),
                 "imdb_rating": self.get_imdb_rating(),
-                "popularity": self.get_popularity(),
                 "genre": self.get_genre(),
                 "synopsis": self.get_synopsis(),
                 "director": self.get_director(),
@@ -146,7 +132,6 @@ class Movie:
                 "stars": self.get_stars(),
                 "ranking_position": self.get_ranking(),
                 "metascore": self.get_metascore(),
-                "original_country": self.get_original_country(),
             }
 
             self.logger.info(f'{infos["title"]} was succesfully caught')
