@@ -40,7 +40,6 @@ class Movie:
     def get_genre(self) -> list[str]:
         class_ = "div.ipc-chip-list__scroller > a > span.ipc-chip__text"
         genres = self.soup.select(class_)
-        print(genres)
         genres = self.clean_list_tags(genres)
         return genres
 
