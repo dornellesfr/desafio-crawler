@@ -90,7 +90,10 @@ def test_get_metascore() -> None:
 
 
 def test_clean_list_tags() -> None:
-    tag = ['<li>Christian Bale</li>', '<li>Leo Dicaprio</li>',
-           '<li>Elizabeth Olsen</li>']
-    result = ['Christian Bale', 'Leo Dicaprio', 'Elizabeth Olsen']
-    assert fight_club.clean_list_tags(tag) == result
+    class_ = "a.ipc-metadata-list-item__label, " \
+            "span.ipc-metadata-list-item__label, " \
+            "a.ipc-metadata-list-item__list-content-item"
+    tags = soup.select(class_)[6:9]
+
+    result = ['Brad Pitt', 'Edward Norton', 'Meat Loaf']
+    assert fight_club.clean_list_tags(tags) == result
