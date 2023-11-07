@@ -18,7 +18,7 @@ It is necessary be installed in your pc:
 ## How to install this project and run
 Follows this steps to run the app
 
-` git clone git@github.com:dornellesfr/desafio-crawler.git && cd desafio-crawler`
+`git clone git@github.com:dornellesfr/desafio-crawler.git && cd desafio-crawler`
 
 `docker-compose up -d`
 
@@ -32,7 +32,7 @@ You'll get into the container so run
 
 It will start to scraping the pages.
 
-You can fallow the execution at file scraper.log with logs showing what movie is scraping.
+You can follow the execution at file scraper.log with logs showing what movie is scraping.
 Result going to output file named as output.json and a screenshot gonna show as screenshot.pdf
 
 ## To run tests
